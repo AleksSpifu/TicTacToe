@@ -7,7 +7,7 @@ char board[10];
 bool player1turn = true;
 bool player2exists = true;
 int turn = 1;
-char winLines[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '1', '4', '7', '2', '5', '8', '3', '6', '9', '1', '5', '9', '3', '5', '7' };
+char winLines[24] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '1', '4', '7', '2', '5', '8', '3', '6', '9', '1', '5', '9', '3', '5', '7' };
 
 void setPieces() {
     board[1] = '1';
@@ -21,7 +21,7 @@ void setPieces() {
     board[9] = '9';
 }
 void updateBoard() {
-    for (int i = 1; i <= 9; i++) {
+    for (int i = 1; i <= (sizeof(board)/sizeof(board[0]))-1; i++) {
         std::cout << spacer << board[i];
         if (i % 3 == 0) {
             std::cout << spacer << "\n";
@@ -31,35 +31,69 @@ void updateBoard() {
 
 int aiMoves() {
     int counter = 0;
+    char searchfor = 'O';
     char selection = '0';
+    char obtainedSpaces[3] = {'0','0','0'};
+    //for (int i = 0; i < sizeof(winLines); i++) {
+    //    if (i % 3 == 0) {
+    //        std::cout << "inside for loop, looking for " << winLines[i]-'0' << winLines[i+1]-'0' << winLines[i+2]-'0' << "\n";
+    //        if (counter == 2) {
+    //            std::cout << "Board[winlines[i]] == " << board[winLines[i]-'0'] << " and winlines[i] == " << winLines[i] << "\n";
+    //            if (board[winLines[i] -'0']-'0' == winLines[i] - '0') {
+    //                selection = winLines[i];
+    //                return selection - '0';
+    //                std::cout << "Returning " << selection - '0' << "\n";
+    //            }
+    //            else if (board[winLines[i-1]-'0'] == winLines[i-1] - '0') {
+    //                selection = winLines[i-1];
+    //                return selection - '0';
+    //                std::cout << "Returning " << selection - '0' << "\n";
+    //            }
+    //            else if (board[winLines[i-2]-'0'] == winLines[i-3 - '0']) {
+    //                selection = winLines[i-2];
+    //                return selection - '0';
+    //                std::cout << "Returning " << selection - '0' << "\n";
+    //            }
+    //        }
+    //        counter = 0;
+    //    }
+    //    if (board[winLines[i]-'0'] != winLines[i]) {
+    //        counter++;
+    //        std::cout << board[winLines[i]-'0'] << " != " << winLines[i] << ", counter = " << counter << "\n";
+    //    }
+    //    
+    //}
+
     for (int i = 0; i < sizeof(winLines); i++) {
-        if (i % 3 == 0) {
-            std::cout << "inside for loop, looking for " << winLines[i]-'0' << winLines[i+1]-'0' << winLines[i+2]-'0' << "\n";
-            if (counter > 1) {
-                if (board[winLines[i]-'0'] == winLines[i]) {
-                    selection = winLines[i];
-                    return selection - '0';
-                    std::cout << "Returning " << selection - '0' << "\n";
+        if (board[winLines[i] - '0'] == searchfor) {
+            obtainedSpaces[counter] = board[winLines[i]-'0'];
+            counter++;
+
+            //std::cout << board[winLines[i] - '0'] << "\nCounter er nå " << counter << "\n";
+        }
+        if ((i) % 3 == 0) {
+            if (counter == 2) {
+                if (obtainedSpaces[0] != searchfor) {
+                    selection = obtainedSpaces[0];
+                    std::cout << "returning " << obtainedSpaces[0] << "\n";
                 }
-                else if (board[winLines[i-1]-'0'] == winLines[i-1]) {
-                    selection = winLines[i-1];
-                    return selection - '0';
-                    std::cout << "Returning " << selection - '0' << "\n";
+                else if (obtainedSpaces[1] != searchfor) {
+                    selection = obtainedSpaces[1];
+                    std::cout << "returning " << obtainedSpaces[1] << "\n";
                 }
-                else if (board[winLines[i-2]-'0'] == winLines[i-3]) {
-                    selection = winLines[i-2];
-                    return selection - '0';
-                    std::cout << "Returning " << selection - '0' << "\n";
+                else if (obtainedSpaces[2] != searchfor) {
+                    selection = obtainedSpaces[2];
+                    std::cout << "returning " << obtainedSpaces[2] << "\n";
                 }
             }
             counter = 0;
-        }
-        if (board[winLines[i]-'0'] != winLines[i]) {
-            counter++;
-            std::cout << board[winLines[i]-'0'] << " != " << winLines[i] << ", counter = " << counter << "\n";
+            obtainedSpaces[0] = {'0'};
+            obtainedSpaces[1] = {'0'};
+            obtainedSpaces[2] = {'0'};
         }
         
     }
+
     if (selection != '0') {
         return selection-'0';
         std::cout << "Returning " << selection - '0' << "\n";
@@ -136,8 +170,9 @@ int aiMoves() {
         for (int i = 1; i <= 9; i++) {
             if (board[i] != 'X' && board[i] != 'O') { //failsafe to make sure it plays anything in case none of the above happen.
                 return i;
-                break;
                 std::cout << "Checking " << i;
+                break;
+                
             }
         }
     }
